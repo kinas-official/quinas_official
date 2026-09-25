@@ -18,7 +18,9 @@ html {
    touch-action blocks the pan on touch devices, where overflow:hidden alone is
    unreliable, while still permitting pinch-zoom. */
 html.intro-scroll-locked,
-html.intro-scroll-locked body {
+html.intro-scroll-locked body,
+html.nav-scroll-locked,
+html.nav-scroll-locked body {
     overflow: hidden;
     overscroll-behavior: none;
     touch-action: pinch-zoom;

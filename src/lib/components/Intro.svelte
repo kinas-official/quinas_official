@@ -25,11 +25,34 @@
     let cursor = $state({ x: -100, y: -100 });
 
     // Floating pill while the hero is in view; docks into the full-width bar once it's scrolled past
+    // (also docked while the mobile menu is open, so it sits flush on the full-screen overlay)
     const navClass = $derived(
-        pastIntro
+        pastIntro || mobileNavOpen
             ? 'top-0 w-full h-20 rounded-none border-b bg-black/80 backdrop-blur-md px-8 md:px-16'
             : 'top-4 sm:top-6 w-[92%] sm:w-3/4 h-16 rounded-2xl border bg-black/70 backdrop-blur-xl px-5 md:px-8 shadow-[0_10px_40px_rgba(0,0,0,0.45)]'
     );
+
+    // While the full-screen menu is open: freeze the page behind it, close on Escape,
+    // and close if the viewport grows past the breakpoint where the inline nav takes over.
+    $effect(() => {
+        if (!mobileNavOpen) return;
+        const root = document.documentElement;
+        root.classList.add('nav-scroll-locked');
+        const onKey = (/** @type {KeyboardEvent} */ e) => {
+            if (e.key === 'Escape') mobileNavOpen = false;
+        };
+        const lg = window.matchMedia('(min-width: 1024px)');
+        const onBreakpoint = () => {
+            if (lg.matches) mobileNavOpen = false;
+        };
+        window.addEventListener('keydown', onKey);
+        lg.addEventListener('change', onBreakpoint);
+        return () => {
+            root.classList.remove('nav-scroll-locked');
+            window.removeEventListener('keydown', onKey);
+            lg.removeEventListener('change', onBreakpoint);
+        };
+    });
 
     onMount(() => {
         // The circular follower cursor only makes sense on devices driven by a real
@@ -174,20 +197,41 @@
     </button>
 </header>
 
-<!-- Mobile Navigation Drawer -->
+<!-- Mobile Navigation Overlay. Full-viewport sheet under the header (z-40 vs z-50) so the
+     toggle stays reachable; `invisible` when closed so it can't swallow taps. -->
 <div
-    class="fixed top-20 left-0 w-full bg-black/95 backdrop-blur-md border-b border-zinc-900 z-40 lg:hidden flex flex-col font-mono text-xs tracking-widest text-zinc-400 transition-all duration-300 overflow-y-auto overscroll-contain select-none"
+    class="fixed inset-0 z-40 lg:hidden flex flex-col bg-black pt-20 font-mono select-none overflow-y-auto overscroll-contain transition-[opacity,visibility] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
     class:opacity-100={mobileNavOpen}
+    class:visible={mobileNavOpen}
     class:opacity-0={!mobileNavOpen}
-    style:max-height={mobileNavOpen ? 'calc(100dvh - 5rem)' : '0px'}
+    class:invisible={!mobileNavOpen}
+    class:pointer-events-none={!mobileNavOpen}
+    aria-hidden={!mobileNavOpen}
+    inert={!mobileNavOpen}
 >
-    {#each navLinks as link, i (link.href)}
-        <a
-            href={link.href}
-            class="px-8 py-4 border-b border-zinc-900/60 last:border-b-0 hover:text-white transition-colors duration-300"
-            onclick={() => (mobileNavOpen = false)}
-        >// {navIndex(i)}. {link.label}</a>
-    {/each}
+    <nav class="flex flex-1 flex-col justify-center px-8 sm:px-16">
+        {#each navLinks as link, i (link.href)}
+            <a
+                href={link.href}
+                class="group flex items-baseline gap-4 py-4 border-b border-zinc-900 text-zinc-400 hover:text-white transition-[color,opacity,translate] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                class:opacity-0={!mobileNavOpen}
+                class:translate-y-3={!mobileNavOpen}
+                style:transition-delay={mobileNavOpen ? `${80 + i * 45}ms` : '0ms'}
+                onclick={() => (mobileNavOpen = false)}
+            >
+                <span class="text-[10px] tracking-widest text-zinc-600 group-hover:text-zinc-400">{navIndex(i)}</span>
+                <span class="text-xl sm:text-2xl tracking-[0.15em]">{link.label}</span>
+            </a>
+        {/each}
+    </nav>
+
+    <div class="flex items-center justify-between px-8 sm:px-16 py-8 text-[10px] tracking-[0.2em] text-zinc-600">
+        <span>PRODUCT ENGINEERING STUDIO</span>
+        <span class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500 opacity-80 animate-pulse"></span>
+            SYS_ACTIVE
+        </span>
+    </div>
 </div>
 
 <!-- Hero Section Entry Block -->
@@ -237,9 +281,10 @@
             class:opacity-100={showContent}
             class:opacity-0={!showContent}
         >
-            <span class="h-px w-8 bg-zinc-700"></span>
-            SYSTEMS ENGINEERED WITH INTENT
-            <span class="h-px w-8 bg-zinc-700"></span>
+            <span class="h-px w-8 shrink-0 bg-zinc-700"></span>
+            <!-- Negative margin cancels the trailing letter-spacing so the text sits optically centred between the rules -->
+            <span class="text-center mr-[-0.3em]">SYSTEMS ENGINEERED WITH INTENT</span>
+            <span class="h-px w-8 shrink-0 bg-zinc-700"></span>
         </div>
     </div>
 
