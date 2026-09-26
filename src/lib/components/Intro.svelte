@@ -168,7 +168,7 @@
         <span class="font-mono text-xs tracking-[0.3em] text-white font-bold">QUINAS</span>
     </div>
 
-    <!-- Minimalist Navigation Layout. The full seven-section list only clears the
+    <!-- Minimalist Navigation Layout. The full section list only clears the
          floating pill from lg up; below that it lives in the drawer. Labels drop the
          `NN.` index here (the footer sitemap keeps it) purely to buy the width. -->
     <nav class="hidden lg:flex items-center gap-4 xl:gap-7 font-mono text-[10px] tracking-wider xl:tracking-widest text-zinc-400">
@@ -191,9 +191,10 @@
         aria-expanded={mobileNavOpen}
         onclick={() => (mobileNavOpen = !mobileNavOpen)}
     >
-        <span class="h-px bg-white transition-all duration-300" class:w-6={!mobileNavOpen} class:w-4={mobileNavOpen} class:rotate-45={mobileNavOpen} class:translate-y-[3px]={mobileNavOpen}></span>
+        <!-- Outer bars travel 7px (1px bar + 6px gap) onto the middle line, then rotate into an ✕ -->
+        <span class="h-px w-6 bg-white transition-all duration-300" class:rotate-45={mobileNavOpen} class:translate-y-[7px]={mobileNavOpen}></span>
         <span class="h-px bg-white w-6 transition-opacity duration-300" class:opacity-0={mobileNavOpen}></span>
-        <span class="h-px bg-white transition-all duration-300" class:w-6={!mobileNavOpen} class:w-4={mobileNavOpen} class:-rotate-45={mobileNavOpen} class:-translate-y-[3px]={mobileNavOpen}></span>
+        <span class="h-px w-6 bg-white transition-all duration-300" class:-rotate-45={mobileNavOpen} class:translate-y-[-7px]={mobileNavOpen}></span>
     </button>
 </header>
 

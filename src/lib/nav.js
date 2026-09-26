@@ -9,6 +9,7 @@ export const navLinks = [
 	{ label: 'SERVICES', href: '#services' },
 	{ label: 'CREED', href: '#creed' },
 	{ label: 'LEDGER', href: '#ledger' },
+	{ label: 'FOUNDER', href: '#founder' },
 	{ label: 'CONTACT', href: '#contact' }
 ];
 

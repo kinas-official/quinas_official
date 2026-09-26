@@ -5,6 +5,7 @@
 	import Systems from '$lib/components/Systems.svelte';
 	import Beliefs from '$lib/components/Beliefs.svelte';
 	import Ledger from '$lib/components/Ledger.svelte';
+	import Founder from '$lib/components/Founder.svelte';
 	import ContactTerminal from '$lib/components/ContactTerminal.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import { page } from '$app/state';
@@ -42,5 +43,6 @@
 <Systems />
 <Beliefs />
 <Ledger />
+<Founder />
 <ContactTerminal />
 <Footer />
